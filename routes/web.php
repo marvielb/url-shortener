@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ShortenController;
+use App\Http\Controllers\UrlMappingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [ShortenController::class, 'create'])->name('shorten.create');
+Route::post('/', [ShortenController::class, 'store'])->name('shorten.store');
+Route::get('/{shortUrl}', [UrlMappingController::class, 'redirect'])->name('shorten.redirect');
