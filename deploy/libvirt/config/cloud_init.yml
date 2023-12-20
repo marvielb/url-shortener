@@ -1,0 +1,37 @@
+#cloud-config
+# vim: syntax=yaml
+# examples:
+# https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+# bootcmd:
+#   - echo 192.168.0.1 gw.homedns.xyz >> /etc/hosts
+runcmd:
+  - [ls, -l, /]
+  - [sh, -xc, "echo $(date) ': hello world!'"]
+ssh_pwauth: false
+disable_root: true
+users:
+  - name: debian
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    home: /home/debian
+    shell: /bin/bash
+    lock_passwd: false
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCt6rMSxcArV/EDF2+kQEivPyLYBuFcEfXkyVTrcqNmZKsWqh1LKyGOFgcgieCtss8CYw1pKj0aO0nTjBT4rHV+XOU6cLIathfOGRH6rbF0KVyIVzE9mpQZSCsu/UCD+hlZQ8TUVtMk9ILLpZjZXLKyjE4oJmI/oY1dFfLOL65s7QfyIFKFJ72Qz1CbObnJXeWrsrMk/BHu9BW7x/JeOH5MzvG0UH20uA0YjD7SKGxOsYp9qv7ZMl0AKqTN+q48SS0Qyz4lhLeRJx8jstybAw9PLRckk96ojXioZqAfqhD7fLngOOJEwUytdUtWc+DMDaOujCuZLQuS/wqwqAjOxz2UEAvW1oiPkJ6XVVzGl72bd5o5EQjvrKevDt6wdny0qTHBxJaAVrMGLdVKE/FNYLnB9Sx4UPT9P/OOIYjRoc0H2rKFeOMJI9VoDBLw4LfR29DcUETquKmBXsw3NUJUfL3wD7tO7kUXG+jht9zyCaxj3aY8YZ7kX0a6MeGL9rbn4a8= marvielb@archlinux
+package_update: true
+package_upgrade: true
+packages:
+  - htop
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg-agent
+  - software-properties-common
+runcmd:
+  - curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+  - add-apt-repository "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+  - apt-get update -y
+  - apt-get install -y docker-ce docker-ce-cli containerd.io
+  - systemctl start docker
+  - systemctl enable docker
+final_message: "The system is finally up, after $UPTIME seconds"
